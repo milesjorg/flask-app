@@ -6,14 +6,14 @@
     <title>{% block title %} {% endblock %} - FlaskApp</title>
 </head>
 <body>
-    <form method="post">
+    <form method="post" action="/signup/">
         <label for="username">Create a username</label>
         <input type="text" id="username" name="username" value="{{ request.form['username'] }}">
         <br>
         <label for="password">Create a password</label>
         <input type="text" id="password" name="password" value="{{ request.form['password'] }}">
         <br>
+        <button type="submit">Create account!</button>
     </form>
-    <button type="submit">Create account!</button>
 </body>
 </html>

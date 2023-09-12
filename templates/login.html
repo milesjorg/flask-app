@@ -6,13 +6,26 @@
     <title>{% block title %} {% endblock %} - FlaskApp</title>
 </head>
 <body>
-    <form>
-        <label for="username">Username</label>
-        <input type="text" id="username", name="username"><br>
-        <label for="password">Password</label>
-        <input type="text" id="password", name="password"><br>
-    </form>
-    <button>Login</button>
+    <h1>Login</h1>
+    {% if error %}
+    <p class=error><strong>Error:</strong> {{error}} 
+        {% endif %}
+        <form method="post" action="/login/">
+            <label for="username">Username</label>
+            <input type="text" id="username", name="username"><br>
+            <label for="password">Password</label>
+            <input type="text" id="password", name="password"><br>
+            <button>Login</button>
+        </form>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class=flashes>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
     <h4>Don't have an account?</h4>
     <a href="{{ url_for('signup') }}">Create one!</a>
 </body>
