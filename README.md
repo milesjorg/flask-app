@@ -2,10 +2,7 @@
 Follow these steps to get the app running on your local machine:
 1. Create a folder to to contain the project and go to that directory in your editor/IDE
 2. Create a Python virtual environment
-   - In VS Code: Ctrl+Shift+P -> "Python: Create environment"
-   - Select .venv
-   - Confirm you are in the virtual environment with Ctrl+Shift+P -> "Python: Select interpreter"
-   - Select option with "('.venv':venv)"
+   - https://docs.python.org/3/tutorial/venv.html
 3. Download dependencies and set environment variables
    - Open a terminal in your project folder
    - Run "pip install flask"
