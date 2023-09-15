@@ -9,3 +9,8 @@ nav a {
     margin-left: 50px;
     text-decoration: none;
 }
+
+#game_container {
+    border: 2px;
+    border-color: black;
+}
