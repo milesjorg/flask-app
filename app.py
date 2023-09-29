@@ -29,7 +29,7 @@ def login():
             if password == request.form["password"]:
                 print("Login credentials verified")
                 return redirect(url_for("home"))
-            # TODO: Show error msg
+            # TODO: Style error message
             else:
                 flash("Invalid credentials", "error")
                 return render_template("login.html")
@@ -82,9 +82,25 @@ def capitalize(word):
 def about():
     return render_template("about.html")
 
-@app.route("/play/")
-def play():
-    return render_template("play.html")
+@app.route("/arcade/")
+def arcade():
+    return render_template("arcade.html")
+
+@app.route("/flappybird/")
+def flappybird():
+    return render_template("flappybird.html")
+
+@app.route("/avalanche/")
+def avalanche():
+    return render_template("avalanche.html")
+
+@app.route("/slingshot/")
+def slingshot():
+    return render_template("slingshot.html")
+
+@app.route("/flip/")
+def flip():
+    return render_template("flip.html")
 
 def create_app():
     app = Flask(__name__)

@@ -1,6 +1,7 @@
 body {
     margin: 20px auto;
     text-align: center;
+    overflow: hidden;
 }
 
 nav a {
@@ -10,7 +11,7 @@ nav a {
     text-decoration: none;
 }
 
-#game_container {
+#gameCanvas {
     border: 2px;
     border-color: black;
 }
