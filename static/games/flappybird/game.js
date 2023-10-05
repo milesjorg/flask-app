@@ -5,15 +5,16 @@ const Engine = Matter.Engine,
   Composites = Matter.Composites,
   Bodies = Matter.Bodies,
   Bounds = Matter.Bounds,
+  Events = Matter.Events,
   Runner = Matter.Runner;
 
 const engine = Engine.create();
 const runner = Runner.create();
 const render = Render.create({
-  element: document.getElementById("gameCanvas"),
+  element: document.getElementById("gameContainer"),
   engine: engine,
   options: {
-    width: 1200,
+    width: 600,
     height: 1000,
     wireframes: false,
     background: "grey",
@@ -21,62 +22,92 @@ const render = Render.create({
   }
 });
 
-const bird = Bodies.circle(render.options.width / 3, render.options.height / 3, 15, {frictionAir: 0, label: "bird"});
-const ground = Bodies.rectangle(0, render.options.height + 50, 100000000000, 200, {isStatic: true});
+const canvas = render.canvas;
+const ctx = canvas.getContext('2d');
+engine.timing.timeScale = 0.7;
 
-World.add(engine.world, [bird, ground]);
-Body.setVelocity(bird, {x: 3, y: 0});
+const bird = Bodies.circle(render.options.width / 4, render.options.height / 2, 15, { frictionAir: 0.04, label: "bird" });
+const ground = Bodies.rectangle(render.options.width / 2, render.options.height + 50, render.options.width, 200, { isStatic: true });
+const gapSize = 200;
 
-function spawnPipe() {
-  const pipe = Bodies.rectangle(1000, 250, 50, 500, {isStatic: true});
-  World.add(engine.world, [pipe]);
+function randomBetween(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
+
+function generatePipeHeights() {
+  let topPipeHeight = randomBetween(100, (render.options.height / 2) - 100);
+  let bottomPipeHeight = render.options.height - topPipeHeight - gapSize;
+
+  let sizes = [topPipeHeight, bottomPipeHeight];
+  if (Math.random() < 0.5) {
+    sizes = sizes.reverse();
+  };
+  return sizes;
+}
+const pipeWidth = 150;
+let pipePosX = render.options.width - (pipeWidth / 2);
+
+let pipePair1 = new Pipe(pipePosX);
+let pipePair2 = new Pipe(pipePosX * 1.8);
+
+World.add(engine.world, [bird, ground, pipePair1.topPipe, pipePair1.bottomPipe, pipePair2.topPipe, pipePair2.bottomPipe]);
+let pipePairs = [pipePair1, pipePair2];
+const translate = { x: -1, y: 0 };
+let score = 0;
+
+Events.on(engine, "afterUpdate", function () {
+  for (let i = 0; i < pipePairs.length; i++) {
+    if (pipePairs[i].topPipe.position.x <= -1 * (pipeWidth / 2)) {
+      pipePairs[i] = new Pipe(render.options.width * 1.6 - (pipeWidth / 2));
+
+    } else {
+      Body.translate(pipePairs[i].topPipe, translate);
+      Body.translate(pipePairs[i].bottomPipe, translate);
+    }
+  };
+});
+
+Events.on(render, "afterRender", function() {
+  ctx.font = "48px PixelFont";
+  ctx.fillStyle = "white";
+  ctx.fillText(score, render.options.width / 2 - 24, 40);
+  for (let i = 0; i < pipePairs.length; i++) {
+    if (bird.position.x == pipePairs[i].topPipe.position.x) {
+      score++;
+    };
+  }
+});
+
+
+Events.on(engine, "collisionStart", function() {
+  ctx.font = "32px PixelFont";
+  ctx.fillStyle = "red";
+  ctx.fillText("GAME OVER", (render.options.width / 2) - 80, render.options.height / 3);
+  Render.stop(render);
+});
 
 let spacePressed = false;
 function jump() {
   if (!spacePressed) {
-    Body.applyForce(bird, bird.position, {x: 0, y: -0.04});
-    console.log("space pressed")
+    Body.applyForce(bird, bird.position, { x: 0, y: -0.05 });
     spacePressed = true;
   }
 }
 
-document.addEventListener("keydown", function(event) {
+document.addEventListener("keydown", function (event) {
   if (event.code === "Space") {
     jump();
   };
 });
 
-document.addEventListener("keyup", function(event) {
+document.addEventListener("keyup", function (event) {
   if (event.code === "Space") {
     spacePressed = false;
   };
-});
+}
+);
+
+// TODO: Add a function to send score to DB table
 
 Runner.run(engine);
 Render.run(render);
-// let translate = {x: 3, y: 0};
-// Bounds.translate(render.bounds, translate);
-
-function followPlayer() {
-  const canvas = render.canvas;
-  const ctx = canvas.getContext('2d');
-
-  const playerX = bird.position.x;
-  const playerY = bird.position.y;
-
-  const canvasCenterX = bird.position.x / 2;
-  const canvasCenterY = bird.position.y / 2;
-  
-  const cameraX = playerX - canvasCenterX;
-  const cameraY = playerY - canvasCenterY;
-
-  ctx.translate(-cameraX, -cameraY);
-}
-
-function gameLoop() {
-  followPlayer();
-  requestAnimationFrame(gameLoop);
-}
-
-gameLoop();

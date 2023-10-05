@@ -62,26 +62,34 @@ const concaveRect = Body.create({
 const anchor = { x: 400, y: 700 };
 
 // Can have its own class
-const projectile = Bodies.circle(anchor.x, anchor.y, 20, {
+let projectile = Bodies.circle(anchor.x, anchor.y, 20, {
     restitution: 1,
     frictionAir: 0.01
 });
 
 // Can have its own class
-const sling = new Sling(anchor, projectile);
+// let sling = new Sling(anchor, projectile);
+let sling = Constraint.create({
+    pointA: anchor,
+    bodyB: projectile,
+    stiffness: 0.01,
+    length: 1,
+    damping: 0.01,
+    label: "sling"
+});
 
 // Can have its own class
-const mouse = Mouse.create(render.canvas),
-    mouseConstraint = MouseConstraint.create(engine, {
-        mouse: mouse,
-        constraint: {
-            stiffness: 0.1,
-            render: {
-                visible: false
-            }
+const mouse = Mouse.create(render.canvas)
+const mouseConstraint = MouseConstraint.create(engine, {
+    mouse: mouse,
+    constraint: {
+        stiffness: 0.4,
+        render: {
+            visible: false
         }
-    });
-
+    }
+});
+render.mouse = mouse;
 
 document.addEventListener("keydown", function (event) {
     if (event.code === "Space") {
@@ -93,9 +101,24 @@ document.addEventListener("keydown", function (event) {
     }
 });
 
+let firing = false;
+Events.on(mouseConstraint, "enddrag", function(e) {
+    console.log(e.body);
+    if (e.body === projectile) {
+        firing = true;
+    };
+});
+
 Events.on(engine, "afterUpdate", function () {
-    if (mouseConstraint.mouse.button === -1 && (projectile.position.x > anchor.x + 4)) {
-        sling.detach();
+    if (firing && Math.abs(projectile.position.x - anchor.x) < 20 && Math.abs(projectile.position.y - anchor.y) < 20) {
+        // sling.detach();
+        projectile = Bodies.circle(anchor.x, anchor.y, 20, {
+            restitution: 1,
+            frictionAir: 0.01
+        });
+        World.add(engine.world, projectile);
+        sling.bodyB = projectile;
+        firing = false;
     }
 });
 

@@ -1,11 +1,42 @@
 import datetime, os
 import psycopg2
+from models.user import User
 from markupsafe import escape
-from flask import Flask, render_template, request, flash, url_for, redirect
+from flask import Flask, render_template, request, flash, url_for, redirect, session
+from flask_session import Session
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "c0eb487a57f7ab46b2d25c410e60b92a2e7d01c232f4e380"
+# https://flask-session.readthedocs.io/en/latest/quickstart.html
+app.config["SESSION_TYPE"] = "filesystem"
+app.config["SESSION_PERMANENT"] = False
+app.config["PERMANENT_SESSION_LIFETIME"] = datetime.timedelta(minutes=15)
+# app.config['SESSION_USE_SIGNER'] = True
+app.secret_key = os.environ["FLASK_SECRET_KEY"]
+app.config.from_object(__name__)
 
+Session(app)
+
+def get_user(user_id=None, username=None):
+    if not user_id and not username:
+        return
+    if user_id and username:
+        return
+    conn = get_db_connection()
+    cur = conn.cursor()
+    if user_id:
+        cur.execute(f"SELECT (username, password, user_id) FROM users WHERE user_id={user_id};")
+    else:
+        cur.execute(f"SELECT (username, password, user_id) FROM users WHERE username='{username}';")
+
+    result = cur.fetchone()[0].split(',')
+
+    username = result[0][1:]
+    password = result[1][::]
+    user_id = result[2][:-1]
+    print(type(user_id))
+
+    user = User(user_id, username, password)
+    return user
 
 def get_db_connection():
     conn = psycopg2.connect(
@@ -20,14 +51,10 @@ def get_db_connection():
 def login():
     try:
         if request.method == "POST":
-            conn = get_db_connection()
-            cur = conn.cursor()
-            cur.execute(f"SELECT (username, password) FROM users WHERE username='{request.form['username']}';")
-            result = cur.fetchone()[0].split(',')
-            user = result[0][1:]
-            password = result[1][:-1]
-            if password == request.form["password"]:
-                print("Login credentials verified")
+            user = get_user(username=request.form["username"])
+            if user.password == request.form["password"]:
+                session["user_id"] = user.user_id
+                print(session)
                 return redirect(url_for("home"))
             # TODO: Style error message
             else:
@@ -40,13 +67,9 @@ def login():
 
 @app.route("/signup/", methods=("GET", "POST"))
 def signup():
-    print(request)
-
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        print(request.form["username"])
-        print(request.form["password"])
 
         if not username:
             flash("Field required")
@@ -70,8 +93,8 @@ def signup():
 @app.route("/")
 @app.route("/index/")
 def home():
-    return render_template("index.html", utc_dt=datetime.datetime.utcnow())
-
+    user = get_user(user_id=session["user_id"])
+    return render_template("index.html", utc_dt=datetime.datetime.utcnow(), user_name=user.username)
 
 @app.route("/capitalize/<word>/")
 def capitalize(word):
@@ -102,6 +125,6 @@ def slingshot():
 def flip():
     return render_template("flip.html")
 
-def create_app():
-    app = Flask(__name__)
-    app.config["SECRET KEY"] = "c0eb487a57f7ab46b2d25c410e60b92a2e7d01c232f4e380"
+# def create_app():
+#     app = Flask(__name__)
+#     app.config["SECRET KEY"] = "c0eb487a57f7ab46b2d25c410e60b92a2e7d01c232f4e380"

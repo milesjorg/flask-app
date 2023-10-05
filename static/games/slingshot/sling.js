@@ -1,8 +1,8 @@
 class Sling {
-    constructor(anchor, body) {
+    constructor(anchor, projectile) {
         const options = {
             pointA: anchor,
-            bodyB: body,
+            bodyB: projectile,
             stiffness: 0.01,
             length: 1,
             damping: 0.01,
@@ -13,9 +13,14 @@ class Sling {
     };
 
     detach() {
-        World.remove(engine.world, this.sling);
+        this.sling.bodyB = Bodies.circle(this.sling.pointA.x, this.sling.pointA.y, 20, {
+            restitution: 1,
+            frictionAir: 0.01
+        });
+        World.add(engine.world, this.sling.bodyB);
+        firing = false;
     }
-    
+
     reset(anchor, body) {
         this.detach()
         Body.setSpeed(body, 0);

@@ -11,7 +11,24 @@ nav a {
     text-decoration: none;
 }
 
-#gameCanvas {
+#gameContainer {
     border: 2px;
     border-color: black;
+    font-family: 'Typographica', 'PixelFont', Arial, Helvetica, sans-serif;
+}
+
+#matter-container {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+@font-face {
+    font-family: "Typographica";
+    src: url("/static/fonts/Typographica.ttf");
+}
+
+@font-face {
+    font-family: "PixelFont";
+    src: url("/static/fonts/PixelFont.ttf");
 }

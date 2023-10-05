@@ -1,3 +1,5 @@
+const matterContainer = document.querySelector("#matter-container");
+
 var Engine = Matter.Engine,
     Render = Matter.Render,
     Runner = Matter.Runner,
@@ -10,21 +12,19 @@ var Engine = Matter.Engine,
 
 // create engine
 var engine = Engine.create();
-var runner = Runner.create();
 // create renderer
 var render = Render.create({
-  element: document.getElementById("game_container"),
+  element: matterContainer,
   engine: engine,
   options: {
-    width: 800,
-    height: 1000,
+    width: matterContainer.clientWidth,
+    height: matterContainer.clientHeight,
     wireframes: false,
-    background: "grey"
+    background: "transparent"
   }
 });
 
-Render.run(render);
-Runner.run(engine);
+
 
 // add bodies
 var stack = Composites.stack(20, 20, 20, 5, 0, 0, function(x, y) {
@@ -41,15 +41,15 @@ Composite.add(engine.world, [
 
 // add mouse control
 var mouse = Mouse.create(render.canvas),
-    mouseConstraint = MouseConstraint.create(engine, {
-        mouse: mouse,
-        constraint: {
-            stiffness: 0.2,
-            render: {
-                visible: false
-            }
+mouseConstraint = MouseConstraint.create(engine, {
+    mouse: mouse,
+    constraint: {
+        stiffness: 0.2,
+        render: {
+            visible: false
         }
-    });
+    }
+});
 
 Composite.add(engine.world, mouseConstraint);
 
@@ -57,7 +57,7 @@ Composite.add(engine.world, mouseConstraint);
 render.mouse = mouse;
 
 // fit the render viewport to the scene
-Render.lookAt(render, Composite.allBodies(engine.world));
+// Render.lookAt(render, Composite.allBodies(engine.world));
 
 // wrapping using matter-wrap plugin
 for (var i = 0; i < stack.bodies.length; i += 1) {
@@ -66,3 +66,20 @@ for (var i = 0; i < stack.bodies.length; i += 1) {
         max: { x: render.bounds.max.x, y: render.bounds.max.y }
     };
 }
+
+Render.run(render);
+const runner = Runner.create();
+Runner.run(runner, engine);
+
+function handleResize(matterContainer) {
+    render.canvas.width = matterContainer.clientWidth;
+    render.canvas.height = matterContainer.clientHeight;
+    
+    // reposition ground
+    // Matter.Body.setPosition(ground, Matter.Vector.create(
+        //     matterContainer.clientWidth / 2,
+        //     matterContainer.clientHeight
+        // ));
+    }
+
+window.addEventListener("resize", () => handleResize(matterContainer));
