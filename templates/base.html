@@ -3,19 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %} {% endblock %} - FlaskApp</title>
+    <title>{% block title %} {% endblock %}</title>
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
 </head>
 <body>
-    <nav>
+    <nav id="navBar">
         <a href="{{ url_for('home') }}">Home</a>
         <a href="{{ url_for('arcade') }}">Arcade</a>
         <a href="{{ url_for('about') }}">About</a>
         <a href="{{ url_for('login') }}">Sign out</a>
     </nav>
-    <hr>
     <div class="content">
         {% block content %} {% endblock %}
     </div>
+    <div id="themeButtons">
+        <button type="button" id="colorSwap">
+            <div class="arrow-right"></div>
+            <div class="arrow-left"></div>
+        </button>
+        <button type="button" id="colorChanger">
+    </div>
+    <script src="{{ url_for('static', filename='theme.js') }}"></script>
 </body>
 </html>

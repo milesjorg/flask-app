@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %} {% endblock %} - FlaskApp</title>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
 </head>
-<body>
-    <h1>Login</h1>
+<body id="loginPage">
+    <h1>Enter Your Credentials</h1>
     {% if error %}
     <p class=error><strong>Error:</strong> {{error}} 
         {% endif %}
@@ -14,19 +15,23 @@
             <label for="username">Username</label>
             <input type="text" id="username", name="username"><br>
             <label for="password">Password</label>
-            <input type="text" id="password", name="password"><br>
-            <button>Login</button>
+            <input type="text" id="password", name="password" autocomplete="off"><br>
+            <button>Log In</button>
         </form>
-    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% with messages = get_flashed_messages(with_categories=false) %}
         {% if messages %}
-            <ul class=flashes>
+        <ul class=flashes>
             {% for message in messages %}
-                <li>{{ message }}</li>
+            <li>{{ message }}</li>
             {% endfor %}
-            </ul>
+        </ul>
         {% endif %}
-    {% endwith %}
-    <h4>Don't have an account?</h4>
-    <a href="{{ url_for('signup') }}">Create one!</a>
+        {% endwith %}
+        <a href="{{ url_for('signup') }}">Don't have an account?</a>
+        <div id="themeButtons">
+            <button type="button" id="colorSwap">
+            <button type="button" id="colorChanger">
+        </div>
+    <script src="{{ url_for('static', filename='theme.js') }}"></script>
 </body>
 </html>

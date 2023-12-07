@@ -8,6 +8,7 @@ const Engine = Matter.Engine,
   Events = Matter.Events,
   Runner = Matter.Runner;
 
+
 const engine = Engine.create();
 const runner = Runner.create();
 const render = Render.create({
@@ -44,6 +45,7 @@ function generatePipeHeights() {
   };
   return sizes;
 }
+
 const pipeWidth = 150;
 let pipePosX = render.options.width - (pipeWidth / 2);
 
@@ -78,12 +80,23 @@ Events.on(render, "afterRender", function() {
   }
 });
 
-
 Events.on(engine, "collisionStart", function() {
+  const high_score = getUserHighScore("FlappyBird")
+  console.log(high_score);
+  const gameData = {
+    game_name: "FlappyBird",
+    time_start: new Date().toISOString(),
+    last_score: score,
+    high_score: high_score,
+  };
   ctx.font = "32px PixelFont";
   ctx.fillStyle = "red";
   ctx.fillText("GAME OVER", (render.options.width / 2) - 80, render.options.height / 3);
+  Engine.clear(engine);
   Render.stop(render);
+  Runner.stop(runner);
+  game_over();
+  sendGameData(gameData);
 });
 
 let spacePressed = false;
@@ -104,10 +117,55 @@ document.addEventListener("keyup", function (event) {
   if (event.code === "Space") {
     spacePressed = false;
   };
-}
-);
-
-// TODO: Add a function to send score to DB table
+});
 
 Runner.run(engine);
 Render.run(render);
+
+function game_over() {
+  const gameOverPrompt = document.createElement('div');
+  gameOverPrompt.id = 'gameOverPrompt';
+  gameOverPrompt.textContent = "Play again?";
+  const spaceBreak = document.createElement('br');
+  const playAgainButton = document.createElement('button');
+  playAgainButton.textContent = "Yes!";
+  playAgainButton.id = "playAgainButton";
+  const quitButton = document.createElement('button');
+  quitButton.textContent = "No, I quit.";
+  quitButton.id = "quitButton";
+
+  gameOverPrompt.appendChild(spaceBreak);
+  gameOverPrompt.appendChild(playAgainButton);
+  gameOverPrompt.appendChild(quitButton);
+
+  const parentElement = document.getElementById("gameContainer");
+  parentElement.appendChild(gameOverPrompt);
+
+  playAgainButton.addEventListener("click", function () {
+    location.reload();
+  });
+
+  quitButton.addEventListener("click", function () {
+    window.location.href = "/arcade/";
+  });
+}
+
+function sendGameData(gameData) {
+  fetch('/store_game_data/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(gameData),
+  });
+}
+
+function getUserHighScore() {
+  fetch('/get_user_high_score/')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`${response.status}`)
+      }
+      return response.json();
+    });
+}
