@@ -1,0 +1,42 @@
+project_root/
+│
+├── app/
+│   ├── static/
+│   │   ├── css/
+│   │   │   └── styles.css
+│   │   ├── js/
+│   │   │   └── scripts.js
+│   │   └── images/
+│   │
+│   ├── templates/
+│   │   ├── base.html
+│   │   ├── index.html
+│   │   ├── game.html
+│   │   └── user.html
+│   │
+│   ├── __init__.py
+│   ├── config.py
+│   ├── models.py
+│   ├── routes/
+│   │   ├── __init__.py
+│   │   ├── auth.py
+│   │   ├── game.py
+│   │   └── user.py
+│   │
+│   └── services/
+│       ├── __init__.py
+│       ├── game_service.py
+│       └── user_service.py
+│
+├── migrations/
+│   ├── versions/
+│   └── alembic.ini
+│
+├── tests/
+│   └── test_app.py
+│
+├── .env
+├── .gitignore
+├── requirements.txt
+├── run.py
+└── config.py

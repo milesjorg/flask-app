@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %} {% endblock %} - FlaskApp</title>
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+</head>
+<body id="signupPage">
+    <h1>Create an Account</h1>
+    {% if error %}
+    <p class="error"><strong>Error:</strong> {{error}}
+        {% endif %}
+        <form method="post" action="{{ url_for('auth.register') }}">
+            <!-- TODO: Incorporate CSRF token -->
+            <label for="username">Create a username</label>
+            <input type="text" id="username" name="username" value="{{ request.form['username'] }}" autocomplete="off">
+            <br>
+            <label for="password">Create a password</label>
+            <input type="text" id="password" name="password" value="{{ request.form['password'] }}" autocomplete="off">
+            <br>
+            <button type="submit">Create account!</button>
+        </form>
+    {% with messages = get_flashed_messages(with_categories=false) %}
+        {% if messages %}
+            <ul class="flashes">
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    <a href="{{ url_for('auth.login') }}">Have an account?</a>
+    <div id="themeButtons">
+        <button type="button" id="colorSwap">
+        <button type="button" id="colorChanger">
+    </div>
+    <script src="{{ url_for('static', filename='css/theme.js') }}"></script>
+</body>
+</html>
