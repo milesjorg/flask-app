@@ -10,24 +10,24 @@ conn = psycopg2.connect(
 
 cur = conn.cursor()
 
-cur.execute("DROP TABLE IF EXISTS users;")
+cur.execute("DROP TABLE IF EXISTS users CASCADE;")
 cur.execute("DROP TABLE IF EXISTS scoreboard;")
 cur.execute(
     "CREATE TABLE users (user_id SERIAL PRIMARY KEY, \
                          username VARCHAR (15) NOT NULL UNIQUE, \
-                         password VARCHAR (15) NOT NULL, \
+                         password VARCHAR (255) NOT NULL, \
                          date_added TIMESTAMP without time zone default (now() at time zone 'utc'));"
 )
 
 cur.execute(
-    "CREATE TABLE scoreboard (game_id SERIAL PRIMARY KEY, \
+    "CREATE TABLE base_game_data (id SERIAL PRIMARY KEY, \
                               user_id INT, \
-                              game_name VARCHAR, \
-                              time_start TIMESTAMP without time zone default (now() at time zone 'utc'), \
-                              play_duration INTERVAL, \
-                              last_score INT, \
-                              high_score INT, \
-                              status VARCHAR);"
+                              title VARCHAR, \
+                              time_start TIMESTAMP without time zone default (now() at time zone 'utc'));"
+)
+
+cur.execute(
+    "CREATE TABLE racer (lap_splits VARCHAR ARRAY)"
 )
 
 conn.commit()

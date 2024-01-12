@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br>
+<br>
+<canvas id="gameCanvas" style="width: 60%; height: 50%" width="1024" height="768"></canvas>
+<script src="{{ url_for('static', filename='games/racer-master/racer-master/build/main.min.js') }}"></script>
+
+{% endblock %}

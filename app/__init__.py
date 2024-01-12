@@ -74,6 +74,11 @@ def create_app():
     @login_required
     def hourglass():
         return render_template("hourglass.html")
+
+    @app.route("/racer")
+    @login_required
+    def racer():
+        return render_template("racer.html")
     
     @app.route("/capitalize/<word>")
     @login_required
