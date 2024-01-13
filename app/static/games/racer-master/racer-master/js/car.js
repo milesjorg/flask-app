@@ -7,7 +7,7 @@ const gameData = {
 };
 
 function saveGameData(gameData) {
-  fetch('/save_game_data', {
+  fetch('/save_game_data'+gameData.game_name, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -728,6 +728,7 @@ Car.prototype = {
 
     if (this.index === 0 && this.lap === 3 && race.state != STATE_RACEOVER) {
       // race over!!!
+      console.log("Race over");
       this.finishPosition = this.getPosition();
       speak("Race. Over.")
       speak(this.finishPosition + " Place");

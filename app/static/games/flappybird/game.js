@@ -148,7 +148,7 @@ function game_over() {
 }
 
 function saveGameData(gameData) {
-  fetch('/save_game_data', {
+  fetch('/save_game_data/' + gameData.game_name, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
